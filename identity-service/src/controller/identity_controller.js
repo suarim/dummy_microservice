@@ -16,7 +16,7 @@ const userregistercontroller = async (req,res)=>{
             name,email,hashedPassword
         })
         await user.save();
-        const {authtoken,refreshtoken} = await generateAuthToken(user);
+        const {authtoken,refreshtokenVal} = await generateAuthToken(user);
         logger.info(`User registered with email ${email}`);
         res.status(201).json({status:'success',message:'User registered successfully'});
     }
