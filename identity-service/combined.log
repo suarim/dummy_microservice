@@ -1,0 +1,4 @@
+{"level":"info","message":"Server is running on port 5001","service":"identity-service","timestamp":"2025-03-31T04:21:34.511Z"}
+{"level":"info","message":"Connected to MongoDB","service":"identity-service","timestamp":"2025-03-31T04:21:35.131Z"}
+{"level":"info","message":"Server is running on port 5001","service":"identity-service","timestamp":"2025-03-31T04:21:50.218Z"}
+{"level":"info","message":"Connected to MongoDB","service":"identity-service","timestamp":"2025-03-31T04:21:50.705Z"}
