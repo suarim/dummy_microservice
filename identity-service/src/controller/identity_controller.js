@@ -1,10 +1,13 @@
 const usermodel = require('../models/User');
 const argon2 = require('argon2');
 const logger = require('../utils/Logger');
+const validateschema = require('../utils/validation');
+const generateToken = require('../utils/generateToken');
 // const jwt = require('jsonwebtoken');
 const userregistercontroller = async (req,res)=>{
     try{
         const {name,email,password} = req.body;
+        logger.info(password);
         const hashedPassword = await argon2.hash(password);
         const {error} = validateschema(req.body);
         if (error){
@@ -13,12 +16,12 @@ const userregistercontroller = async (req,res)=>{
         }
         else{
         const user = new usermodel({
-            name,email,hashedPassword
+            name,email,password:hashedPassword
         })
         await user.save();
-        const {authtoken,refreshtokenVal} = await generateAuthToken(user);
+        const {authtoken,refreshtokenVal} = await generateToken(user);
         logger.info(`User registered with email ${email}`);
-        res.status(201).json({status:'success',message:'User registered successfully'});
+        res.status(201).json({status:'success',data:{name,email,authtoken,refreshtoken:refreshtokenVal}});
     }
     }
     catch(err){
