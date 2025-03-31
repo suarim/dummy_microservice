@@ -1,7 +1,7 @@
 const usermodel = require('../models/User');
 const argon2 = require('argon2');
 const logger = require('../utils/Logger');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 const userregistercontroller = async (req,res)=>{
     try{
         const {name,email,password} = req.body;
@@ -18,4 +18,4 @@ const userregistercontroller = async (req,res)=>{
         res.status(500).json({status:'error',message:'Internal server error'});
     }
 }
-
+module.exports = userregistercontroller;
