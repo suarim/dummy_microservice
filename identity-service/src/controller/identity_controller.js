@@ -7,7 +7,6 @@ const generateToken = require('../utils/generateToken');
 const userregistercontroller = async (req,res)=>{
     try{
         const {name,email,password} = req.body;
-        logger.info(password);
         const hashedPassword = await argon2.hash(password);
         const {error} = validateschema(req.body);
         if (error){
