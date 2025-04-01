@@ -6,14 +6,42 @@ const cors = require('cors');
 const helmet = require('helmet');   
 const logger = require('./utils/Logger');
 const errorhandler = require('./middlewares/errorHandler');
+const {RateLimiterRedis} = require('rate-limiter-flexible')
+const Redis = require('ioredis');
+const {rateLimit} = require('express-rate-limit')
+const {RedisStore} = require('rate-limit-redis');
+const CustomError = require('./utils/customError');
+
 const app = express();
+const redis = new Redis(process.env.REDIS_URL);
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+const ratelimiter = new RateLimiterRedis({
+    storeClient:redis,
+    keyPrefix:'middleware',
+    points:1,
+    duration:2,
+}) 
+
+app.use((req,res,next)=>{
+    ratelimiter.consume(req.ip)
+    .then(()=>{
+        next();
+    })
+    .catch((err)=>{
+         next(new CustomError('Too many requests',429));
+        
+    })
+})
+
 app.use((req,res,next)=>{
     logger.info(`${req.method} ${req.url}`);
     next();
 })
+
 app.use('/api/auth',routes);
 app.use(errorhandler);
 
