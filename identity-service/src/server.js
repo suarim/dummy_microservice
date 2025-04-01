@@ -5,13 +5,17 @@ const routes = require('./routes/identity_service')
 const cors = require('cors');
 const helmet = require('helmet');   
 const logger = require('./utils/Logger');
+const errorhandler = require('./middlewares/errorHandler');
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
 app.use('/api/auth',routes);
+app.use(errorhandler);
+
 console.log(process.env.MONGO_URI);app.listen(process.env.PORT,()=>{
     logger.info(`Server is running on port ${process.env.PORT}`);   
+    logger.info(process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI).then(()=>{
     logger.info('Connected to MongoDB');
 }).catch((err)=>{

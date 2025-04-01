@@ -3,19 +3,18 @@ const argon2 = require('argon2');
 const logger = require('../utils/Logger');
 const validateschema = require('../utils/validation');
 const generateToken = require('../utils/generateToken');
-// const jwt = require('jsonwebtoken');
-const userregistercontroller = async (req,res)=>{
+const CustomError = require('../utils/customError');
+const userregistercontroller = async (req,res,next)=>{
     try{
         const {name,email,password} = req.body;
         if(!name || !email || !password){
-            logger.error('Please provide all the fields');
-            return res.status(400).json({status:'error',message:'Please provide all the fields'});
+            throw new CustomError('Please enter all fields',400);
         }
         const hashedPassword = await argon2.hash(password);
         const {error} = validateschema(req.body);
         if (error){
             logger.error(error);
-            return res.status(400).json({status:'error',message:error.details[0].message});
+            throw new CustomError(error.details[0].message,400);
         }
         else{
         const user = new usermodel({
@@ -28,8 +27,7 @@ const userregistercontroller = async (req,res)=>{
     }
     }
     catch(err){
-        logger.error(err);
-        res.status(500).json({status:'error',message:'Internal server error'});
+        next(err)
     }
 }
 module.exports = userregistercontroller;
