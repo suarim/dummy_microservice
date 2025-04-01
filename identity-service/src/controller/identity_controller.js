@@ -13,7 +13,7 @@ const userregistercontroller = async (req,res,next)=>{
         const hashedPassword = await argon2.hash(password);
         const {error} = validateschema(req.body);
         if (error){
-            logger.error(error);
+            
             throw new CustomError(error.details[0].message,400);
         }
         else{
