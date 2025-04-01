@@ -30,4 +30,17 @@ const userregistercontroller = async (req,res,next)=>{
         next(err)
     }
 }
-module.exports = userregistercontroller;
+const getallusers = async (req,res,next)=>{
+    try{
+        const {page,offset} = req.body;
+        const users = await usermodel.find({}, '-password').limit(parseInt(offset)).skip(parseInt(page));
+        if(users.length === 0){
+            throw new CustomError('No users found',404);
+        }
+        res.status(200).json({status:'success',data:users});
+    }
+    catch(err){
+        next(err)
+    }
+}
+module.exports = {userregistercontroller,getallusers};

@@ -18,7 +18,10 @@ const redis = new Redis(process.env.REDIS_URL);
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-
+app.use((req,res,next)=>{
+    logger.info(`${req.method} ${req.url}`);
+    next();
+})
 const ratelimiter = new RateLimiterRedis({
     storeClient:redis,
     keyPrefix:'middleware',
@@ -37,11 +40,19 @@ app.use((req,res,next)=>{
     })
 })
 
-app.use((req,res,next)=>{
-    logger.info(`${req.method} ${req.url}`);
-    next();
+const sensitivelimiter = rateLimit({
+    windowMs:15*60*1000,
+    max:1,
+    standardHeaders: true,
+    legacyHeaders:false,
+    handler: (req,res)=>{
+        throw new CustomError('Too many requests123',429);
+    },
+    store: new RedisStore({
+        sendCommand: (...args) => redis.call(...args),
+    })
 })
-
+app.use('/api/auth/users',sensitivelimiter);
 app.use('/api/auth',routes);
 app.use(errorhandler);
 
