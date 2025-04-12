@@ -25,7 +25,7 @@ app.use((req,res,next)=>{
 const ratelimiter = new RateLimiterRedis({
     storeClient:redis,
     keyPrefix:'middleware',
-    points:1,
+    points:1000000,
     duration:2,
 }) 
 
@@ -42,7 +42,7 @@ app.use((req,res,next)=>{
 
 const sensitivelimiter = rateLimit({
     windowMs:15*60*1000,
-    max:1,
+    max:100000000,
     standardHeaders: true,
     legacyHeaders:false,
     handler: (req,res)=>{
